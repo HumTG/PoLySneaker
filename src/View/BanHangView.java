@@ -4,21 +4,28 @@
  */
 package View;
 
+import Model.SanPhamCTSale;
+import Repository.SPCTSaleRepository;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Admin
  */
 public class BanHangView extends javax.swing.JPanel {
 
-    /**
-     * Creates new form BanHangView
-     */
+
+    private SPCTSaleRepository serviceSPCT = new SPCTSaleRepository(); 
+    private DefaultTableModel mol = new DefaultTableModel();
+    
     String email , name ; 
     public BanHangView(String name , String email) {
         initComponents();
         this.email = email; 
         this.name  = name; 
         txt_TenNV.setText(name);
+        this.fillTableSPCT(serviceSPCT.getDataSPCT(txt_TimKiem.getText().trim()));
     }
 
     /**
@@ -43,9 +50,9 @@ public class BanHangView extends javax.swing.JPanel {
         jButton7 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tbl_SPCT = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txt_TimKiem = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -157,33 +164,38 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.red), "Sản phẩm", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_SPCT.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Mã SPCT", "Tên SP", "Màu sắc", "Thương hiệu", "Chất liệu", "Xuất xứ", "Size", "Thương hiệu", "Số lượng tồn ", "Giá bán "
+                "Mã SPCT", "Tên SP", "Màu sắc", "Thương hiệu", "Chất liệu", "Xuất xứ", "Size", "Số lượng tồn ", "Giá bán "
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
+        jScrollPane3.setViewportView(tbl_SPCT);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("Tìm kiếm");
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jTextField1.setForeground(java.awt.Color.red);
-        jTextField1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
+        txt_TimKiem.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        txt_TimKiem.setForeground(java.awt.Color.red);
+        txt_TimKiem.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
+        txt_TimKiem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_TimKiemKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -196,7 +208,7 @@ public class BanHangView extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txt_TimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -205,7 +217,7 @@ public class BanHangView extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txt_TimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(4, 4, 4)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -396,6 +408,12 @@ public class BanHangView extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void txt_TimKiemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_TimKiemKeyReleased
+        // Search Product 
+        String key = txt_TimKiem.getText().trim(); 
+        this.fillTableSPCT(serviceSPCT.getDataSPCT(key));
+    }//GEN-LAST:event_txt_TimKiemKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel GioHang;
@@ -432,12 +450,12 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tbl_SPCT;
     private javax.swing.JTextField txt_MaHD;
     private javax.swing.JTextField txt_TenKH;
     private javax.swing.JTextField txt_TenNV;
     private javax.swing.JTextField txt_TienSauGiamGia;
+    private javax.swing.JTextField txt_TimKiem;
     private javax.swing.JTextField txt_TongTien;
     private javax.swing.JTextField txt_Vocher;
     private javax.swing.JTextField txt_maKH;
@@ -446,4 +464,22 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JTextField txt_tienMat;
     private javax.swing.JTextField txt_tienThua;
     // End of variables declaration//GEN-END:variables
+
+    private void fillTableSPCT(List<SanPhamCTSale> list) {
+        mol = (DefaultTableModel) tbl_SPCT.getModel(); 
+        mol.setRowCount(0);
+        for (SanPhamCTSale x : list) {
+            mol.addRow(new Object[]{
+                x.getMaSPCT(), 
+                x.getTenSP(),
+                x.getTenMauSac(), 
+                x.getTenThuongHieu() , 
+                x.getTenChatLieu() , 
+                x.getTenXuatXu() , 
+                x.getSize() , 
+                x.getSoLuong() , 
+                x.getGiaBan()
+            });
+        }
+    }
 }
