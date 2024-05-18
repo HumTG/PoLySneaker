@@ -4,9 +4,18 @@
  */
 package View;
 
+import Model.HoaDon;
+import Model.HoaDonCT;
 import Model.SanPhamCTSale;
+import Repository.HoaDonCTRepository;
+import Repository.HoaDonRepository;
+import Repository.InformationDAO;
 import Repository.SPCTSaleRepository;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -15,17 +24,22 @@ import javax.swing.table.DefaultTableModel;
  */
 public class BanHangView extends javax.swing.JPanel {
 
-
-    private SPCTSaleRepository serviceSPCT = new SPCTSaleRepository(); 
+    private SPCTSaleRepository serviceSPCT = new SPCTSaleRepository();
+    private HoaDonRepository serviceHD = new HoaDonRepository();
+    private HoaDonCTRepository serviceHDCT = new HoaDonCTRepository();
+    InformationDAO informationDAO = new InformationDAO();
     private DefaultTableModel mol = new DefaultTableModel();
-    
-    String email , name ; 
-    public BanHangView(String name , String email) {
+
+    String email, name;
+
+    public BanHangView(String name, String email) {
         initComponents();
-        this.email = email; 
-        this.name  = name; 
+        this.email = email;
+        this.name = name;
         txt_TenNV.setText(name);
         this.fillTableSPCT(serviceSPCT.getDataSPCT(txt_TimKiem.getText().trim()));
+        this.fillTableHD(serviceHD.getDaTaHD()); // fill hóa đơn chờ  
+        System.out.println(email);
     }
 
     /**
@@ -39,12 +53,12 @@ public class BanHangView extends javax.swing.JPanel {
 
         GioHang = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbl_HoaDonCT = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         HoaDon = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tbl_hoaDon = new javax.swing.JTable();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
@@ -92,7 +106,7 @@ public class BanHangView extends javax.swing.JPanel {
         GioHang.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.red), "Hóa Đơn", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
         GioHang.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_HoaDonCT.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
@@ -111,7 +125,7 @@ public class BanHangView extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tbl_HoaDonCT);
 
         GioHang.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 24, 670, 130));
 
@@ -127,7 +141,7 @@ public class BanHangView extends javax.swing.JPanel {
         HoaDon.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.red), "Hóa Đơn", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
         HoaDon.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_hoaDon.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -146,11 +160,21 @@ public class BanHangView extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
+        tbl_hoaDon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_hoaDonMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tbl_hoaDon);
 
         HoaDon.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 24, 670, 150));
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/icons8-add-24.png"))); // NOI18N
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
         HoaDon.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 30, 40, -1));
 
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/icons8-remove-24.png"))); // NOI18N
@@ -236,6 +260,8 @@ public class BanHangView extends javax.swing.JPanel {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Mã KH");
+
+        txt_maKH.setEnabled(false);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Tên KH");
@@ -333,6 +359,8 @@ public class BanHangView extends javax.swing.JPanel {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel9.setText("Tổng Tiền");
         jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+
+        txt_TongTien.setEnabled(false);
         jPanel4.add(txt_TongTien, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 150, -1));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -343,6 +371,8 @@ public class BanHangView extends javax.swing.JPanel {
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel11.setText("Tiền sau giảm giá");
         jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 107, -1));
+
+        txt_TienSauGiamGia.setEnabled(false);
         jPanel4.add(txt_TienSauGiamGia, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 222, -1));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -350,22 +380,38 @@ public class BanHangView extends javax.swing.JPanel {
         jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
         cbo_hinhThuc.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        cbo_hinhThuc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chuyển Khoản", "Tiền Mặt" }));
+        cbo_hinhThuc.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn hình thức thanh toán", "Chuyển Khoản", "Tiền Mặt" }));
+        cbo_hinhThuc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbo_hinhThucActionPerformed(evt);
+            }
+        });
         jPanel4.add(cbo_hinhThuc, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 153, -1));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel13.setText("Tiền mặt");
         jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 281, -1, -1));
+
+        txt_tienMat.setEnabled(false);
+        txt_tienMat.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_tienMatKeyReleased(evt);
+            }
+        });
         jPanel4.add(txt_tienMat, new org.netbeans.lib.awtextra.AbsoluteConstraints(79, 278, 141, -1));
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel14.setText("Tiền CK");
         jPanel4.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 315, -1, -1));
+
+        txt_tienCK.setEnabled(false);
         jPanel4.add(txt_tienCK, new org.netbeans.lib.awtextra.AbsoluteConstraints(79, 312, 141, -1));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel15.setText("Tiền thừa");
         jPanel4.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 349, -1, -1));
+
+        txt_tienThua.setEnabled(false);
         jPanel4.add(txt_tienThua, new org.netbeans.lib.awtextra.AbsoluteConstraints(78, 346, 141, -1));
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/icons8-confirm-24.png"))); // NOI18N
@@ -410,9 +456,49 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void txt_TimKiemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_TimKiemKeyReleased
         // Search Product 
-        String key = txt_TimKiem.getText().trim(); 
+        String key = txt_TimKiem.getText().trim();
         this.fillTableSPCT(serviceSPCT.getDataSPCT(key));
     }//GEN-LAST:event_txt_TimKiemKeyReleased
+
+    private void tbl_hoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_hoaDonMouseClicked
+        // Click hiện thị hóa đơn chi tiết , hiện thị thông tin hóa đơn lên form 
+        int index = tbl_hoaDon.getSelectedRow();
+        if (index < -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn ! ");
+            return;
+        }
+        cbo_hinhThuc.setSelectedIndex(0);
+        txt_tienCK.setText("");
+        int idHoaDon = (Integer) this.tbl_hoaDon.getValueAt(index, 0);
+        this.fillTableHDCT(serviceHDCT.getHDCT(idHoaDon));
+        this.showInformation();
+    }//GEN-LAST:event_tbl_hoaDonMouseClicked
+
+    private void cbo_hinhThucActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbo_hinhThucActionPerformed
+        // Chọn phương thức thanh toán 
+        this.choicePayMents();
+    }//GEN-LAST:event_cbo_hinhThucActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // Tạo hóa đơn chờ 
+        this.createBill();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void txt_tienMatKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_tienMatKeyReleased
+        // Nhận tiền mặt của khách 
+        try {
+            if (txt_tienMat.getText().isEmpty()) {
+                txt_tienThua.setText("");
+            }
+            NumberFormat vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            BigDecimal sumMonney = (BigDecimal.valueOf(Double.valueOf(txt_TienSauGiamGia.getText())));
+            BigDecimal moneyReceived = BigDecimal.valueOf(Double.valueOf(txt_tienMat.getText()));
+            BigDecimal change = moneyReceived.subtract(sumMonney);
+            txt_tienThua.setText(vndFormat.format(change));
+        } catch (Exception e) {
+            txt_tienThua.setText("");
+        }
+    }//GEN-LAST:event_txt_tienMatKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -448,9 +534,9 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable tbl_HoaDonCT;
     private javax.swing.JTable tbl_SPCT;
+    private javax.swing.JTable tbl_hoaDon;
     private javax.swing.JTextField txt_MaHD;
     private javax.swing.JTextField txt_TenKH;
     private javax.swing.JTextField txt_TenNV;
@@ -465,21 +551,93 @@ public class BanHangView extends javax.swing.JPanel {
     private javax.swing.JTextField txt_tienThua;
     // End of variables declaration//GEN-END:variables
 
+    // fill table sản phẩm chi tiết 
     private void fillTableSPCT(List<SanPhamCTSale> list) {
-        mol = (DefaultTableModel) tbl_SPCT.getModel(); 
+        mol = (DefaultTableModel) tbl_SPCT.getModel();
         mol.setRowCount(0);
         for (SanPhamCTSale x : list) {
             mol.addRow(new Object[]{
-                x.getMaSPCT(), 
+                x.getMaSPCT(),
                 x.getTenSP(),
-                x.getTenMauSac(), 
-                x.getTenThuongHieu() , 
-                x.getTenChatLieu() , 
-                x.getTenXuatXu() , 
-                x.getSize() , 
-                x.getSoLuong() , 
+                x.getTenMauSac(),
+                x.getTenThuongHieu(),
+                x.getTenChatLieu(),
+                x.getTenXuatXu(),
+                x.getSize(),
+                x.getSoLuong(),
                 x.getGiaBan()
             });
         }
+    }
+
+    // fill table hóa đơn
+    private void fillTableHD(List<HoaDon> list) {
+        mol = (DefaultTableModel) tbl_hoaDon.getModel();
+        mol.setRowCount(0);
+        for (HoaDon x : list) {
+            mol.addRow(new Object[]{
+                x.getIdHoaDon(),
+                x.getTenKH(),
+                x.getTenNV(),
+                x.isTrangThai() ? "Đã thanh toán" : "Chờ thanh toán"
+            });
+        }
+    }
+
+    // fill table hóa đơn chi tiết 
+    private void fillTableHDCT(List<HoaDonCT> list) {
+        mol = (DefaultTableModel) tbl_HoaDonCT.getModel();
+        mol.setRowCount(0);
+        for (HoaDonCT x : list) {
+            mol.addRow(new Object[]{
+                x.getMaHoaDonChiTiet(),
+                x.getTenSanPham(),
+                x.getTenMauSac(),
+                x.getTenChatLieu(),
+                x.getSize(),
+                x.getSoLuong(),
+                x.getGiaBan(),
+                x.getDonGia()
+            });
+        }
+    }
+
+    // Click show thông tin lên form 
+    private void showInformation() {
+        int index = tbl_hoaDon.getSelectedRow();
+        HoaDon hd = serviceHD.getDaTaHD().get(index);
+        txt_maKH.setText(String.valueOf(hd.getIdKhachHang()));
+        txt_TenKH.setText(hd.getTenKH());
+        txt_MaHD.setText(String.valueOf(hd.getIdHoaDon()));
+        txt_TongTien.setText(hd.getThanhTien().toString());
+        txt_TienSauGiamGia.setText(hd.getTienSauGiamGia().toString());
+    }
+
+    // Chọn hình thức thanh toán 
+    private void choicePayMents() {
+        int index = cbo_hinhThuc.getSelectedIndex();
+        if (index == 2) { // Tiền mặt
+            txt_tienMat.setEnabled(true);
+            txt_tienThua.setEnabled(true);
+            txt_tienCK.setText("");
+        } else { // chuyển khoản 
+            txt_tienMat.setEnabled(false);
+            txt_tienThua.setEnabled(false);
+            txt_tienCK.setEnabled(false);
+            String monney = txt_TienSauGiamGia.getText();
+            txt_tienCK.setText(monney);
+        }
+    }
+
+    // Tạo hóa đơn chờ 
+    private void createBill() {
+        int count = tbl_hoaDon.getRowCount();
+        if (count <= 10) {
+            serviceHD.createBill(informationDAO.getIDNVByEmail(email));
+            this.fillTableHD(serviceHD.getDaTaHD());
+        } else {
+            JOptionPane.showMessageDialog(this, "Số lượng hóa đơn không được quá 10 ! ");
+        }
+
     }
 }
