@@ -29,7 +29,7 @@ public class BanHangView extends javax.swing.JPanel {
     private HoaDonCTRepository serviceHDCT = new HoaDonCTRepository();
     InformationDAO informationDAO = new InformationDAO();
     private DefaultTableModel mol = new DefaultTableModel();
-
+    int index_HD = -1;
     String email, name;
 
     public BanHangView(String name, String email) {
@@ -103,7 +103,7 @@ public class BanHangView extends javax.swing.JPanel {
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         GioHang.setBackground(new java.awt.Color(255, 255, 255));
-        GioHang.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.red), "Hóa Đơn", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
+        GioHang.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.red), "Hóa Đơn Chi Tiết ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
         GioHang.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tbl_HoaDonCT.setModel(new javax.swing.table.DefaultTableModel(
@@ -114,7 +114,7 @@ public class BanHangView extends javax.swing.JPanel {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Mã SPCT", "Tên ", "Màu sắc", "Chất liệu", "Size", "Số lượng ", "Giá bán", "Thành tiền"
+                "Mã HĐCT", "Tên ", "Màu sắc", "Chất liệu", "Size", "Số lượng ", "Giá bán", "Thành tiền"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -130,9 +130,19 @@ public class BanHangView extends javax.swing.JPanel {
         GioHang.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(11, 24, 670, 130));
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/icons8-edit-24.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         GioHang.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 30, 40, -1));
 
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/icons8-remove-24.png"))); // NOI18N
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
         GioHang.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 70, 40, -1));
 
         add(GioHang, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 215, 750, 170));
@@ -205,6 +215,11 @@ public class BanHangView extends javax.swing.JPanel {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tbl_SPCT.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_SPCTMouseClicked(evt);
             }
         });
         jScrollPane3.setViewportView(tbl_SPCT);
@@ -462,14 +477,14 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void tbl_hoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_hoaDonMouseClicked
         // Click hiện thị hóa đơn chi tiết , hiện thị thông tin hóa đơn lên form 
-        int index = tbl_hoaDon.getSelectedRow();
-        if (index < -1) {
+        index_HD = tbl_hoaDon.getSelectedRow();
+        if (index_HD < -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn ! ");
             return;
         }
         cbo_hinhThuc.setSelectedIndex(0);
         txt_tienCK.setText("");
-        int idHoaDon = (Integer) this.tbl_hoaDon.getValueAt(index, 0);
+        int idHoaDon = (Integer) this.tbl_hoaDon.getValueAt(index_HD, 0);
         this.fillTableHDCT(serviceHDCT.getHDCT(idHoaDon));
         this.showInformation();
     }//GEN-LAST:event_tbl_hoaDonMouseClicked
@@ -499,6 +514,21 @@ public class BanHangView extends javax.swing.JPanel {
             txt_tienThua.setText("");
         }
     }//GEN-LAST:event_txt_tienMatKeyReleased
+
+    private void tbl_SPCTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_SPCTMouseClicked
+        // Thêm sản phẩm vào hóa dơn chi tiết 
+        this.insertSPCTinHDCT();
+    }//GEN-LAST:event_tbl_SPCTMouseClicked
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // Xóa sản phẩm chi tiết trong hóa đơn chi tiết 
+        this.removeSPCTinHDCT();
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Sửa số lượng sản phẩm chi tiết trong hóa đơn chi tiết 
+        this.updateNumberProduct();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -590,7 +620,7 @@ public class BanHangView extends javax.swing.JPanel {
         mol.setRowCount(0);
         for (HoaDonCT x : list) {
             mol.addRow(new Object[]{
-                x.getMaHoaDonChiTiet(),
+                x.getIdHoaDonChiTiet(),
                 x.getTenSanPham(),
                 x.getTenMauSac(),
                 x.getTenChatLieu(),
@@ -640,4 +670,137 @@ public class BanHangView extends javax.swing.JPanel {
         }
 
     }
+
+    // Thêm sản phẩm chi tiết vào trong hóa đơn chi tiết 
+    private void insertSPCTinHDCT() {
+        int index_SPCT = tbl_SPCT.getSelectedRow();
+        SanPhamCTSale spct = serviceSPCT.getDataSPCT(txt_TimKiem.getText()).get(index_SPCT);
+        String maSPCT = spct.getMaSPCT();
+        // Check xem đã chọn hóa đơn chưa ? 
+        if (index_HD < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn !");
+        } else {  // Đã chọn hóa đơn 
+            // Nhập số lượng sản phẩm 
+            String inputNumber = JOptionPane.showInputDialog("Nhập số lượng sản phẩm muốn thêm ");
+            if (String.valueOf(inputNumber).isEmpty()) {
+                return; // thoát khỏi thanh nhập số lượng ; 
+            }
+            try {
+                int idSPCT = informationDAO.getIDSPCTByMaSPCT(maSPCT);
+                int idHD = (Integer) tbl_hoaDon.getValueAt(index_HD, 0);
+                int numberProductTonKho = (Integer) tbl_SPCT.getValueAt(index_SPCT, 7);
+                int numberProduct = Integer.valueOf(inputNumber);
+                BigDecimal donGiaSPCT = (BigDecimal) tbl_SPCT.getValueAt(index_SPCT, 8);
+                BigDecimal thanhTien = donGiaSPCT.multiply(BigDecimal.valueOf(Double.valueOf(numberProduct)));
+                if (numberProduct < 0) { // Nhập số lượng < 0 
+                    JOptionPane.showMessageDialog(this, "Số lượng sản phẩm phải lớn hơn 0 ! ");
+                } else if (numberProduct > numberProductTonKho) {
+                    JOptionPane.showMessageDialog(this, "Số lượng sản phẩm tổn kho không đủ ! ");
+                } else {
+                    // check xem sản phẩm chi tiết đã tổn tại trong hóa đơn chi tiết chưa 
+                    int checkSPCT = 0;
+                    for (HoaDonCT x : serviceHDCT.getHDCT(idHD)) {
+                        if (idSPCT == x.getIdChiTietSanPham()) {
+                            // đã có trong hóa đơn chi tiết 
+                            int soLuongSP = serviceHDCT.getSLSP(idSPCT, idHD) + numberProduct;
+                            BigDecimal sumMonney = donGiaSPCT.multiply(BigDecimal.valueOf(Double.valueOf(soLuongSP)));
+                            serviceHDCT.updateHDCT(idSPCT, idHD, soLuongSP, sumMonney);
+                            serviceSPCT.updateSLSPCT(idSPCT, numberProductTonKho - numberProduct);
+                            serviceHD.updateSumMonneyBill(idHD, serviceHDCT.getSumMonneyInHDCT(idHD));
+                            this.fillTableHDCT(serviceHDCT.getHDCT(idHD));
+                            this.fillTableSPCT(serviceSPCT.getDataSPCT(txt_TimKiem.getText()));
+                            txt_TongTien.setText(serviceHDCT.getSumMonneyInHDCT(idHD).toString());
+                            checkSPCT = 1;
+                        }
+                    }
+                    // Sản phẩm chưa tồn tại trong hóa dơn chi tiết 
+                    if (checkSPCT == 0) {
+                        this.serviceHDCT.insertHDCT(idHD, idSPCT, numberProduct, thanhTien);
+                        this.serviceSPCT.updateSLSPCT(idSPCT, numberProductTonKho - numberProduct);
+                        this.serviceHD.updateSumMonneyBill(idHD, serviceHDCT.getSumMonneyInHDCT(idHD));
+                        this.fillTableHDCT(serviceHDCT.getHDCT(idHD));
+                        this.fillTableSPCT(serviceSPCT.getDataSPCT(txt_TimKiem.getText()));
+                        txt_TongTien.setText(serviceHDCT.getSumMonneyInHDCT(idHD).toString());
+                    }
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Số lượng sản phẩm không hợp lệ ! ");
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    // Xóa sản phẩm chi tiết trong hóa đơn chi tiết 
+    private void removeSPCTinHDCT() {
+        int index_HDCT = -1;
+        index_HDCT = tbl_HoaDonCT.getSelectedRow();
+        int index_HD = tbl_hoaDon.getSelectedRow();
+
+        if (index_HDCT < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm muốn xóa ! ");
+        } else {
+            int response = JOptionPane.showConfirmDialog(null, "Bạn xác nhận muốn xóa sản phẩm này ?", "Xác nhận xóa ", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                int numberProduct = (Integer) tbl_HoaDonCT.getValueAt(index_HDCT, 5);
+                int idHDCT = (Integer) tbl_HoaDonCT.getValueAt(index_HDCT, 0);
+                int iDHD = (Integer) tbl_hoaDon.getValueAt(index_HD, 0);
+                HoaDonCT hdct = serviceHDCT.getHDCT(iDHD).get(index_HDCT);
+                int idSPCT = hdct.getIdChiTietSanPham();
+                this.serviceSPCT.addNumberProduct(numberProduct, idSPCT);
+                this.serviceHDCT.deleteHDCT(idHDCT);
+                this.serviceHD.updateSumMonneyBill(iDHD, serviceHDCT.getSumMonneyInHDCT(iDHD));
+                this.fillTableHDCT(serviceHDCT.getHDCT(iDHD));
+                this.fillTableSPCT(serviceSPCT.getDataSPCT(txt_TimKiem.getText()));
+                txt_TongTien.setText(serviceHDCT.getSumMonneyInHDCT(iDHD).toString());
+
+            }
+        }
+
+    }
+
+    // Sửa số lượng sản phẩm chi tiết trong hóa đơn chi tiết 
+    private void updateNumberProduct() {
+        int index_HDCT = -1;
+        index_HDCT = tbl_HoaDonCT.getSelectedRow();
+        if (index_HDCT < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm muốn sửa ! ");
+        } else {
+            try {
+                int index_HD = tbl_hoaDon.getSelectedRow();
+                int idHD = (Integer) tbl_hoaDon.getValueAt(index_HD, 0);
+                HoaDonCT hdct = serviceHDCT.getHDCT(idHD).get(index_HDCT);
+                int idSPCT = hdct.getIdChiTietSanPham();
+                int soLuongSPCTHD = hdct.getSoLuong();
+                int numberProductTonKho = informationDAO.getSLSPCTbyIDSPCT(idSPCT) + soLuongSPCTHD;
+                BigDecimal donGiaSP = hdct.getGiaBan();
+                // Nhập số lượng sản phẩm 
+                String inputNumber = JOptionPane.showInputDialog("Nhập số lượng sản phẩm muốn thêm ");
+                if (String.valueOf(inputNumber).isEmpty()) {
+                    return; // thoát khỏi thanh nhập số lượng ; 
+                }
+                int numberProductUpdate = Integer.valueOf(inputNumber);
+
+                if (numberProductUpdate < 0) { // Nhập số lượng < 0 
+                    JOptionPane.showMessageDialog(this, "Số lượng sản phẩm phải lớn hơn 0 ! ");
+                } else if (numberProductUpdate > numberProductTonKho) {
+                    JOptionPane.showMessageDialog(this, "Số lượng sản phẩm không đủ ! ");
+                } else {
+                    BigDecimal sumMonney = donGiaSP.multiply(BigDecimal.valueOf(Double.valueOf(numberProductUpdate)));
+                    this.serviceHDCT.updateHDCT(idSPCT, idHD, numberProductUpdate, sumMonney);
+                    this.serviceSPCT.updateSLSPCT(idSPCT, numberProductTonKho - numberProductUpdate);
+                    this.serviceHD.updateSumMonneyBill(idHD, serviceHDCT.getSumMonneyInHDCT(idHD));
+                    this.fillTableHDCT(serviceHDCT.getHDCT(idHD));
+                    this.fillTableSPCT(serviceSPCT.getDataSPCT(txt_TimKiem.getText()));
+                    txt_TongTien.setText(serviceHDCT.getSumMonneyInHDCT(idHD).toString());
+
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ ! ");
+            }
+        }
+    }
+
 }

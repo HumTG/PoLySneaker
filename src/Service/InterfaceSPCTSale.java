@@ -14,4 +14,9 @@ import java.util.List;
 public interface InterfaceSPCTSale {
 
     List<SanPhamCTSale> getDataSPCT(String key);
+    
+    void updateSLSPCT(int idSPCT, int soLuong); 
+    
+    void addNumberProduct(int soLuong , int idSPCT); 
+    
 }

@@ -64,9 +64,32 @@ public class SPCTSaleRepository implements InterfaceSPCTSale {
         }
         return lists;
     }
-    
+
     public static void main(String[] args) {
-        SPCTSaleRepository spctsr = new SPCTSaleRepository(); 
+        SPCTSaleRepository spctsr = new SPCTSaleRepository();
         System.out.println(spctsr.getDataSPCT("Giày chạy bộ").toString());
+    }
+
+    @Override
+    public void updateSLSPCT(int idSPCT, int soLuong) {
+        String sql = "UPDATE ChiTietSanPham \n"
+                + "SET SoLuong = " + soLuong + " \n"
+                + "WHERE IDChiTietSanPham = " + idSPCT + " ";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void addNumberProduct(int soLuong, int idSPCT) {
+        String sql = "UPDATE ChiTietSanPham SET SoLuong = SoLuong +  "+soLuong+" \n"
+                + "WHERE IDChiTietSanPham = "+idSPCT+"";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

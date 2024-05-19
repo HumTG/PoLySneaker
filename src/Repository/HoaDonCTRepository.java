@@ -66,4 +66,89 @@ public class HoaDonCTRepository implements InterfaceHoaDonCT {
         return lists;
     }
 
+    // Thêm sản phẩm chi tiết vào trong hóa đơn chi tiết 
+    @Override
+    public void insertHDCT(int idHD, int idCTSP, int soLuongSPCT, BigDecimal donGia) {
+        String sql = "INSERT INTO [dbo].[HoaDonChiTiet]\n"
+                + "           ([ID_HoaDon]\n"
+                + "           ,[ID_ChiTietSanPham]\n"
+                + "           ,[Ma_HoaDonChiTiet]\n"
+                + "           ,[SoLuong]\n"
+                + "           ,[DonGia]\n"
+                + "           ,[TrangThai])\n"
+                + "     VALUES\n"
+                + "           (" + idHD + "\n"
+                + "           ," + idCTSP + "\n"
+                + "           ,null\n"
+                + "           ," + soLuongSPCT + "\n"
+                + "           ," + donGia + "\n"
+                + "           ,1)";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public BigDecimal getSumMonneyInHDCT(int iDHoaDon) {
+        BigDecimal sum = BigDecimal.valueOf(0);
+        String sql = "SELECT SUM(DonGia) as N'Tổng tiền hóa đơn'\n"
+                + "FROM HoaDonChiTiet WHERE ID_HoaDon = " + iDHoaDon + "";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                sum = rs.getBigDecimal(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        HoaDonCTRepository hdctr = new HoaDonCTRepository();
+        System.out.print(hdctr.getSumMonneyInHDCT(1));
+    }
+
+    // lấy ra số lượng sản phẩm chi tiết đã có trong hóa đơn chi tiết 
+    @Override
+    public int getSLSP(int idSPCT, int idHoaDon) {
+        int numberProduct = 0;
+        String sql = "SELECT SoLuong\n"
+                + "FROM HoaDonChiTiet WHERE ID_ChiTietSanPham = " + idSPCT + " and ID_HoaDon = " + idHoaDon + " ";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                numberProduct = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return numberProduct;
+    }
+
+    // cập nhật lại số lượng sản phẩm và đơn giá trong hóa dơn chi tiết 
+    @Override
+    public void updateHDCT(int idSPCT, int idHoaDon, int soLuong, BigDecimal thanhTien) {
+        String sql = "UPDATE HoaDonChiTiet \n"
+                + "SET SoLuong = " + soLuong + " , DonGia = " + thanhTien + " \n"
+                + "WHERE ID_ChiTietSanPham = " + idSPCT + " and ID_HoaDon = " + idHoaDon + " ";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteHDCT(int idHDCT) {
+        String sql = "DELETE HoaDonChiTiet where IDHoaDonChiTiet = "+idHDCT+"";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

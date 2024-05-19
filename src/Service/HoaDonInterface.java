@@ -5,6 +5,7 @@
 package Service;
 
 import Model.HoaDon;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,4 +15,5 @@ import java.util.List;
 public interface HoaDonInterface {
     List<HoaDon> getDaTaHD();  // fill lên hóa đơn chờ 
     void createBill(int IDNhanVien); // tạo hóa đơn chờ mới 
+    void updateSumMonneyBill(int idHoaDon , BigDecimal thanhTien); // cập nhật lại tổng tiền trong hóa đơn  
 }

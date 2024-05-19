@@ -77,7 +77,7 @@ public class HoaDonRepository implements HoaDonInterface {
                 + "           ,[TrangThai])\n"
                 + "     VALUES\n"
                 + "           (1\n"
-                + "           ,"+IDNhanVien+"\n"
+                + "           ," + IDNhanVien + "\n"
                 + "           ,NULL\n"
                 + "           ,NULL\n"
                 + "           ,0\n"
@@ -87,6 +87,18 @@ public class HoaDonRepository implements HoaDonInterface {
                 + "           ,0)";
         try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
             ps.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Cập nhật lại giá tiền trong hóa đơn 
+    @Override
+    public void updateSumMonneyBill(int idHoaDon, BigDecimal thanhTien) {
+        String sql = "UPDATE HoaDon Set ThanhTien = "+thanhTien+" \n"
+                + "WHERE IDHoaDon = "+idHoaDon+"";
+        try (Connection con = DBconnect.getConnection(); PreparedStatement ps = con.prepareCall(sql)) {
+            ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
