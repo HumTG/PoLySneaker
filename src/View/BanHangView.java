@@ -6,10 +6,12 @@ package View;
 
 import Model.HoaDon;
 import Model.HoaDonCT;
+import Model.KhachHang;
 import Model.SanPhamCTSale;
 import Repository.HoaDonCTRepository;
 import Repository.HoaDonRepository;
 import Repository.InformationDAO;
+import Repository.KhachHangRepository;
 import Repository.SPCTSaleRepository;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -27,6 +29,7 @@ public class BanHangView extends javax.swing.JPanel {
     private SPCTSaleRepository serviceSPCT = new SPCTSaleRepository();
     private HoaDonRepository serviceHD = new HoaDonRepository();
     private HoaDonCTRepository serviceHDCT = new HoaDonCTRepository();
+    private KhachHangRepository serviceKH = new KhachHangRepository(); 
     InformationDAO informationDAO = new InformationDAO();
     private DefaultTableModel mol = new DefaultTableModel();
     int index_HD = -1;
@@ -284,6 +287,12 @@ public class BanHangView extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setText("SĐT");
 
+        txt_sdt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_sdtKeyReleased(evt);
+            }
+        });
+
         jButton3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton3.setText("Cập Nhật");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -529,6 +538,11 @@ public class BanHangView extends javax.swing.JPanel {
         // Sửa số lượng sản phẩm chi tiết trong hóa đơn chi tiết 
         this.updateNumberProduct();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void txt_sdtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_sdtKeyReleased
+        // Nhập số điện thoại khách 
+        this.showKHbySDT(); 
+    }//GEN-LAST:event_txt_sdtKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -800,6 +814,23 @@ public class BanHangView extends javax.swing.JPanel {
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ ! ");
             }
+        }
+    }
+
+    // Nhập số điện thoại khách hàng đã mua hàng tại cửa hàng 
+    private void showKHbySDT() {
+        String phoneNumber = txt_sdt.getText(); 
+        int check = 0 ; 
+        for (KhachHang x : serviceKH.getAllDataKH()) {
+            if (phoneNumber.equalsIgnoreCase(x.getSdt())) {
+                txt_TenKH.setText(x.getTenKhachHang());
+                txt_maKH.setText(String.valueOf(x.getIDKhachHang()));
+                check = 1; 
+            }
+        }
+        if (check == 0) {
+            txt_maKH.setText("1");
+            txt_TenKH.setText("Khách hàng lẻ");
         }
     }
 

@@ -624,6 +624,9 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txt_sdt">
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txt_sdtKeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="jButton3">
               <Properties>
