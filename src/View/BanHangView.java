@@ -29,7 +29,7 @@ public class BanHangView extends javax.swing.JPanel {
     private SPCTSaleRepository serviceSPCT = new SPCTSaleRepository();
     private HoaDonRepository serviceHD = new HoaDonRepository();
     private HoaDonCTRepository serviceHDCT = new HoaDonCTRepository();
-    private KhachHangRepository serviceKH = new KhachHangRepository(); 
+    private KhachHangRepository serviceKH = new KhachHangRepository();
     InformationDAO informationDAO = new InformationDAO();
     private DefaultTableModel mol = new DefaultTableModel();
     int index_HD = -1;
@@ -514,11 +514,20 @@ public class BanHangView extends javax.swing.JPanel {
             if (txt_tienMat.getText().isEmpty()) {
                 txt_tienThua.setText("");
             }
-            NumberFormat vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            BigDecimal sumMonney = (BigDecimal.valueOf(Double.valueOf(txt_TienSauGiamGia.getText())));
-            BigDecimal moneyReceived = BigDecimal.valueOf(Double.valueOf(txt_tienMat.getText()));
-            BigDecimal change = moneyReceived.subtract(sumMonney);
-            txt_tienThua.setText(vndFormat.format(change));
+            if (Double.valueOf(txt_TienSauGiamGia.getText()) <= 0 ) {
+                NumberFormat vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                BigDecimal sumMonney = (BigDecimal.valueOf(Double.valueOf(txt_TongTien.getText())));
+                BigDecimal moneyReceived = BigDecimal.valueOf(Double.valueOf(txt_tienMat.getText()));
+                BigDecimal change = moneyReceived.subtract(sumMonney);
+                txt_tienThua.setText(vndFormat.format(change));
+            } else {
+                NumberFormat vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                BigDecimal sumMonney = (BigDecimal.valueOf(Double.valueOf(txt_TienSauGiamGia.getText())));
+                BigDecimal moneyReceived = BigDecimal.valueOf(Double.valueOf(txt_tienMat.getText()));
+                BigDecimal change = moneyReceived.subtract(sumMonney);
+                txt_tienThua.setText(vndFormat.format(change));
+            }
+
         } catch (Exception e) {
             txt_tienThua.setText("");
         }
@@ -541,7 +550,7 @@ public class BanHangView extends javax.swing.JPanel {
 
     private void txt_sdtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_sdtKeyReleased
         // Nhập số điện thoại khách 
-        this.showKHbySDT(); 
+        this.showKHbySDT();
     }//GEN-LAST:event_txt_sdtKeyReleased
 
 
@@ -664,12 +673,19 @@ public class BanHangView extends javax.swing.JPanel {
             txt_tienMat.setEnabled(true);
             txt_tienThua.setEnabled(true);
             txt_tienCK.setText("");
-        } else { // chuyển khoản 
+        } 
+        else if(index == 1) { // chuyển khoản 
             txt_tienMat.setEnabled(false);
             txt_tienThua.setEnabled(false);
             txt_tienCK.setEnabled(false);
+            txt_tienMat.setText("");
+            txt_tienThua.setText("");
             String monney = txt_TienSauGiamGia.getText();
-            txt_tienCK.setText(monney);
+            if (Double.valueOf(monney) == 0 ) {
+                txt_tienCK.setText(txt_TongTien.getText());
+            } else {
+                txt_tienCK.setText(monney);
+            }
         }
     }
 
@@ -819,13 +835,13 @@ public class BanHangView extends javax.swing.JPanel {
 
     // Nhập số điện thoại khách hàng đã mua hàng tại cửa hàng 
     private void showKHbySDT() {
-        String phoneNumber = txt_sdt.getText(); 
-        int check = 0 ; 
+        String phoneNumber = txt_sdt.getText();
+        int check = 0;
         for (KhachHang x : serviceKH.getAllDataKH()) {
             if (phoneNumber.equalsIgnoreCase(x.getSdt())) {
                 txt_TenKH.setText(x.getTenKhachHang());
                 txt_maKH.setText(String.valueOf(x.getIDKhachHang()));
-                check = 1; 
+                check = 1;
             }
         }
         if (check == 0) {
